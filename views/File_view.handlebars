@@ -1,0 +1,115 @@
+<h1 class="text-center mb-3">{{title}}</h1>
+
+<form action="/File" method="POST" class="mb-4">
+    <div class="form-group">
+        <label for="file_name">Name_ThisDisplayOnHtml</label>
+        <input type="text" name="file_name" class="form-control">
+    </div>
+        <div class="form-group">
+        <label for="extention">Email</label>
+        <input type="text" name="extention" class="form-control">
+    </div>
+    <input type="submit" value="Add Member" class="btn btn-primary btn-block">
+</form>
+    <div class="form-group">
+        <label for="file_name">Seach Name </label>
+        <input id="file_name_id" type="text" name="file_name" class="form-control" id="file_name_id">
+    </div>
+    <div class="form-group">
+        <label for="extention">Seach extention</label>
+        <input id="extention_id" type="text" name="extention" class="form-control" >
+    </div>
+    <input id="btn_id" type="submit" value="Search" class="btn btn-primary btn-block" >
+<ul class="list-group">
+    <div id="status_display">Status: 
+    
+    </div>
+    {{#each comment}}
+        <li class="list-group-item" >
+            {{this.status}}
+        </li>
+    {{/each}}
+</ul>
+<script>
+    let fileName = document.getElementById("file_name_id");
+    let extentionName = document.getElementById("extention_id");  
+    let btn = document.getElementById("btn_id");
+    let displayStatus = 0;
+
+    elementCheck_Status = () =>
+    {
+        if( displayStatus > 0) { removeElement('error') }
+        displayStatus = 1;
+        return;
+    }
+    addElement = (parentId, elementTag, elementId, html) =>
+    {
+        const p = document.getElementById(parentId);
+        const newElement = document.createElement(elementTag);
+        newElement.setAttribute('id', elementId);
+        newElement.innerHTML = html;
+        p.appendChild(newElement);
+        displayStatus = 1;
+    }
+    removeElement = (elementId) =>
+    {
+        let element = document.getElementById(elementId);
+        console.log(element);
+        element.parentNode.removeChild(element)
+    }
+</script>
+<script>
+
+    btn.addEventListener("click", search )
+
+    function search () 
+    {
+        console.log('our search has started');
+        const ourRequest =  new XMLHttpRequest();   
+        ourRequest.open('POST', 'http://localhost:5000/api/search');
+        ourRequest.responseType = 'json'; //JSON.parses responce
+        ourRequest.setRequestHeader('Content-Type', 'application/json');
+
+        const sentData = 
+        {
+            "file_name": fileName.value,
+            "extention": extentionName.value
+        };
+
+        ourRequest.onload = function ()
+        {
+            console.log('ourRequest.onload has started')
+            console.log(ourRequest.status);
+            if (ourRequest.status == 400)
+            {
+                console.log('if ourRequest == 200 has started');
+                elementCheck_Status();
+                let htmlString = "<p>" + ourRequest.response[0].status + "</p>";
+                addElement('status_display','p', 'error', htmlString);
+                console.log('if ourRequest == 200 has eneded');
+                return;
+            }
+            if (ourRequest.status == 200)
+            {
+                elementCheck_Status();
+                let htmlString = "<p> File exist </p>";
+                addElement('status_display','p', 'error', htmlString);
+                return;
+            }
+            elementCheck_Status();
+            let htmlString = "<p> File doesn't exist </p>";
+            addElement('status_display','p', 'error', htmlString);
+            console.log(ourRequest);
+            console.log(ourRequest.statusText);            
+            console.log('ourRequest.onload has ended')            
+        }
+        ourRequest.send(JSON.stringify(sentData));
+    }
+
+</script>
+
+
+<a href="/" class="btn btn-light mt-4">Home</a>
+<a href="/" class="btn btn-light mt-4">Home</a>
+<a href="/" class="btn btn-light mt-4">Home</a>
+<a href="/" class="btn btn-light mt-4">Home</a>

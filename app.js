@@ -3,8 +3,9 @@ const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 //LOCAL REQUIRE
-const homeRoute = require('./routes/home');
-const CRUD = require('./routes/CRUD');
+const home_Route = require('./routes/home.route');
+const file_Route = require('./routes/File.route.');
+const search_Route = require('./routes/api/Search.route');
 
 dotenv.config();
 const app = express();
@@ -15,14 +16,23 @@ mongoose.connect(
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => console.log('Connected to db!')
 );
-
+//BODY PARSER
+app.use(express.json());
+app.use(express.urlencoded( {extended: false}));
+//VIEW ENGINE
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));  
 app.set('view engine', 'handlebars');
 
-app.use('/', homeRoute);
-app.use('/CRUD', CRUD);
+//ROUTES
+app.use('/', home_Route);
+app.use('/File', file_Route);
+app.use('/api/search', search_Route);
 
-app.listen(3000, () => console.log('Listening on port 3000'));
+app.listen(5000, () => console.log('Listening on port 5000'));
 
-/* STATUS: INCOMPELTE
-    This version is dedicated to connection to the database  */
+/* STATUS: COMPLETE
+    Working on cleaning up code.
+    Working on deploy latest version.
+*/
+
+// ******  ***********
